@@ -41,7 +41,7 @@
 #define MOVE_PLAY  2
 #define DRAW_PLAY  3
 #define UPDATE	   4
-#define QUIT	   5
+#define QUIT	     5
 
 //
 // CARD linked list struct (for stacking cards)

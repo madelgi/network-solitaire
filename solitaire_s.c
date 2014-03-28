@@ -18,8 +18,7 @@
 #include "cardstack.h"
 #include "carddeck.h"
 
-// 
-// MAXTHREADS is a new global constant that detrmines
+// MAXTHREADS is a global constant that detrmines
 // the size of the game server.
 //
 #define MAXLINE 8192
@@ -29,9 +28,6 @@
 int threadnumber = 0;
 pthread_mutex_t threadnumber_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-// 
-// Jim's functions (edited functions marked)
-//
 arena_t *newArena();
 deal_t *newDeal(deck_t *deck);
 void putArena(arena_t *arena);
@@ -42,15 +38,11 @@ cardstack_t *findEmptyLainStack(deal_t *deal);
 int moveKingOntoFree(card_t *king, deal_t *deal);
 int moveCardOntoAnother(card_t *card, card_t *onto);
 int pullFromDrawPile(deal_t *deal);
-void getNextPlay(int stream, play_t *play, deck_t *deck);		/* EDITED */
+void getNextPlay(int stream, play_t *play, deck_t *deck);		    /* EDITED */
 void sendAck(int client, int ack);
 void playSolitaire(int client, deck_t *deck, arena_t *arena);		/* EDITED */
-int acceptClientOn(int socket);						/* EDITED */
+int acceptClientOn(int socket);						                      /* EDITED */
 int initConnection(int port);
-
-// 
-// Our functions
-//
 char *sendArena(arena_t *arena);
 char *sendDeal(deal_t *deal);
 void sendBoard(int client, arena_t *arena, deal_t *deal);
@@ -339,17 +331,16 @@ void sendAck(int client, int ack) {
 void playSolitaire(int client, deck_t *deck, arena_t *arena) 
 {
 	// initialize
+  //
 	deal_t *deal = newDeal(deck);
 	int i=0;
 	play_t play;
 	int status = SUCCESS;
 	
-	//
 	// Send the initial game-state to the client.
 	//
 	sendBoard(client, arena, deal);
 
-	// 
 	// This code, despite being cosmetically different, is largely 
 	// the same as the original code. I split the switch into an
 	// if-else switch, because I intended to fuss with arena plays.
@@ -416,7 +407,6 @@ int acceptClientOn(int socket) {
 			//
 			pthread_mutex_lock(&threadnumber_mutex);
 
-			//
 			// Assuming we have not exceeded the max number
 			// of clients, create a tinfo struct and initiate another
 			// player into the solitaire game.
@@ -431,7 +421,6 @@ int acceptClientOn(int socket) {
 				ret = pthread_create(&threads[threadnumber], NULL, 
 								connection_handler, (void *)tinfo);
 				
-				// 
 				// This if-else just ensures that the thread creation
 				// is successful. If successful, increase the threadnumber,
 				// detach the thread, and report the client.  Else, free 
@@ -442,7 +431,6 @@ int acceptClientOn(int socket) {
 					pthread_detach(threads[threadnumber]);
 					threadnumber++;
 					
-					//
 					// Report the client that connected
 					// 
 					struct hostent *hostp;
@@ -508,7 +496,6 @@ void *connection_handler(void *arguments)
 
 int initConnection(int port) 
 {
-	//
 	// Open a socket to listen for client connections. Creates a 
 	// socket that is bound to a specific transport service
 	// provider.
@@ -520,7 +507,6 @@ int initConnection(int port)
 		exit(-1);
 	}
 	
-	//
 	// Build the service's info into a (struct sockaddr_in).
 	//
 	struct sockaddr_in serveraddr;
@@ -529,7 +515,6 @@ int initConnection(int port)
 	serveraddr.sin_addr.s_addr = htonl(INADDR_ANY); 
 	serveraddr.sin_port = htons((unsigned short)port); 
 
-	//
 	// Bind that socket to a port. Associates a local address
 	// with a socket.
 	//
@@ -539,7 +524,6 @@ int initConnection(int port)
 		exit(-1);
 	}
 
-	//
 	// Listen for client connections on that socket.
 	//
 	if (listen(listenfd, MAXCONNECTIONS) < 0) 
@@ -558,7 +542,6 @@ double drand48(void);
 
 int main(int argc, char **argv) 
 {
-	// 
 	// Make sure we've been given a port to listen on.
 	//
 	if (argc != 2) 
